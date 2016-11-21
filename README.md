@@ -5,4 +5,4 @@ Written in python 2.7
 
 Work in progress
 
-requirements: mechanize, BeautifulSoup 4
+Required third party libraries: mechanize, BeautifulSoup 4
