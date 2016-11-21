@@ -65,6 +65,7 @@ def extractMemberList(br, targetList):
                     print "processing %s" %url
                     res = mecopner(br, url)
                     soup = getSoup(res)
+                    time.sleep(0.5)
                     break
                 except Exception, e:
                     print repr(e)
@@ -97,10 +98,12 @@ def sendInvite(br, groupID, member, message):
 
             soup = getSoup(res)
             print wasInvited(soup, member)
+            time.sleep(0.5)
             break
         else:
             counter += 1
 
 
+#work in progress
 def sendPM(br, member, message):
     mecopner(br, "https://www.chess.com/messages/compose/%s" %member)
