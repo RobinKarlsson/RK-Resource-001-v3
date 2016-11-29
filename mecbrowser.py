@@ -94,7 +94,7 @@ def sendInvite(br, groupID, member, message):
             form.set_all_readonly(False)
             br["club_members_invite_type[usernames]"] = member
             br["club_members_invite_type[message]"] = message
-            res = br.submit(nr=0)
+            res = br.submit(nr = 0)
 
             soup = getSoup(res)
             print wasInvited(soup, member)
@@ -103,7 +103,36 @@ def sendInvite(br, groupID, member, message):
         else:
             counter += 1
 
+#work in progress
+def sendNote(br, member, message):
+    res = mecopner(br, "https://www.chess.com/member/%s" %member)
+
+    br.select_form("postnote")
+    br.set_all_readonly(False)
+    br["userNote"] = message
+    
+
 
 #work in progress
 def sendPM(br, member, message):
-    mecopner(br, "https://www.chess.com/messages/compose/%s" %member)
+    res = mecopner(br, "https://www.chess.com/messages/compose/%s" %member)
+
+    counter = 0
+    for form in br.forms():
+        if counter == 2:
+            form.set_all_readonly(False)
+            try:
+                form.set_value(member, kind = "text", nr = 0)
+            except:
+                print "failed to set name"
+        elif counter == 5:
+            form.set_all_readonly(False)
+            try:
+                form.set_value(message, kind = "text", nr = 0)
+            except:
+                print "failed to set msg"
+
+            res = br.submit()
+            break
+        #print [(control, control.name, control.type) for control in form.controls]
+        counter += 1
