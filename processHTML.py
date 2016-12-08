@@ -1,3 +1,4 @@
+import re
 from stringoperations import *
 from misc import *
 
@@ -25,13 +26,20 @@ def wasInvited(soup, member):
 
 
 #return [int day, int month, int year]
-#needs more work
+#work in progress. need months ago, years ago and minutes ago, and possibly more
 def getLastOnline(soup):
     res = soup.find("div", {"class" : "member-info-row"}).text.split("\n")
     for x in range(len(res)):
         if res[x] == "Last Login":
+            print res[x + 1]
             if res[x + 1] == "In Live":
                 return todaysDate()
+            if "hrs ago" in res[x + 1]:
+                hoursAgo = int(res[x + 1][0: res[x + 1].index("hrs ago")])
+                return dateHoursAgo(hoursAgo)
+            if "days ago" in res[x + 1]:
+                daysAgo = int(res[x + 1][0: res[x + 1].index("days ago")])
+                return dateDaysAgo(daysAgo)
 
 #return [int day, int month, int year]
 def getJoinDate(soup):
@@ -42,13 +50,56 @@ def getJoinDate(soup):
             return [int(date[1][:-1]), int(streplacer(date[0], (["Jan", "01"], ["Feb", "02"], ["Mar", "03"], ["Apr", "04"], ["May", "05"], ["Jun", "06"], ["Jul", "07"], ["Aug", "08"], ["Sep", "09"], ["Oct", "10"], ["Nov", "11"], ["Dec", "12"]))), int(date[2])]
 
 
+#input res, member object
+def setRatings(res, member):
+    soup = getSoup(res)
 
-#returns nation if no name found, NOT OPERATIONAL
-def getName(soup):
+    for tmp in soup.find_all("h3"):
+        section = tmp.text.split()
+        if len(section) == 2:
+            if section[0] == "Daily":
+                member.daily = int(section[1])
+
+            elif section[0] == "Tactics":
+                member.tactics = int(section[1])
+
+            elif section[0] == "Lessons":
+                member.lessons = int(section[1])
+
+            elif section[0] == "Rapid":
+                member.rapid = int(section[1])
+
+            elif section[0] == "Bullet":
+                member.bullet = int(section[1])
+
+            elif section[0] == "Blitz":
+                member.blitz = int(section[1])
+
+
+#input soup object, member object
+def setName(soup, member):
     details = soup.find("div", {"class" : "details"})
     if details:
         name = details.text.strip().split("\n")[0]
-        return name
     else:
-        print "invalid user"
-        return None
+        return
+
+    for x in soup.find_all("span", {"class" : "username"}):
+        x = str(x)
+        if "data-name" in x:
+            if name in x:
+                member.name = name
+                return
+
+
+def getMemberID(soup):
+    res = str(soup.find("div", {"class" : "load-more-container"})).split()
+
+    for tmp in res:
+        if "userId" in tmp:
+            return re.findall(r'\d+', tmp)[0]
+
+def gettoken(soup):
+    for x in str(soup).strip().split():
+        if '{"userId":"userId","user":{"id":' in x:
+            return x[x.index('"token":"') + 9: -4]

@@ -1,5 +1,6 @@
 import time
 import cookielib
+import urllib
 from processHTML import *
 from stringoperations import *
 from misc import *
@@ -80,59 +81,66 @@ def extractMemberList(br, targetList):
 
     return memberlist
         
-
+#work in progress
 def sendInvite(br, groupID, member, message):
     mecopner(br, "https://www.chess.com/clubs/%s/members/invite" %groupID)
 
-    message = processMsgStr(message.replace("/name", member))
+    message = processMsgStr(message.replace("/name", member.name).replace("/username", member.username))
 
     counter = 0
     for form in br.forms():
-        #print [(control.name, control.type) for control in form.controls]
         if "TextareaControl" in str(form):
             br.select_form(nr = counter)
             form.set_all_readonly(False)
-            br["club_members_invite_type[usernames]"] = member
+            br["club_members_invite_type[usernames]"] = member.username
             br["club_members_invite_type[message]"] = message
             res = br.submit(nr = 0)
 
             soup = getSoup(res)
-            print wasInvited(soup, member)
+            print wasInvited(soup, member.username)
             time.sleep(0.5)
-            break
+            return True
         else:
             counter += 1
-
-#work in progress
-def sendNote(br, member, message):
-    res = mecopner(br, "https://www.chess.com/member/%s" %member)
-
-    br.select_form("postnote")
-    br.set_all_readonly(False)
-    br["userNote"] = message
-    
+    return False
 
 
 #work in progress
-def sendPM(br, member, message):
-    res = mecopner(br, "https://www.chess.com/messages/compose/%s" %member)
+def sendNote(br, member, message, delay = 30):
+    res = mecopner(br, "https://www.chess.com/member/%s" %member.username)
+    soup = getSoup(res)
 
-    counter = 0
-    for form in br.forms():
-        if counter == 2:
-            form.set_all_readonly(False)
-            try:
-                form.set_value(member, kind = "text", nr = 0)
-            except:
-                print "failed to set name"
-        elif counter == 5:
-            form.set_all_readonly(False)
-            try:
-                form.set_value(message, kind = "text", nr = 0)
-            except:
-                print "failed to set msg"
+    usrID = getMemberID(soup)
 
-            res = br.submit()
-            break
-        #print [(control, control.name, control.type) for control in form.controls]
-        counter += 1
+    parameters = {"user_id" : usrID, "user_note" : message.replace("/name", member.name).replace("/username", member.username)}
+    data = urllib.urlencode(parameters)
+    br.open("https://www.chess.com/callback/user/note", data)
+    time.sleep(delay)
+
+
+#input browser object, member object
+def buildMember(br, member):
+    res = mecopner(br, "https://www.chess.com/member/%s" %member.username)
+    soup = getSoup(res)
+    setName(soup, member)
+
+    member.joined = getJoinDate(soup)
+
+    getLastOnline(soup)
+
+    res = mecopner(br, "https://www.chess.com/stats/daily/%s" %member.username)
+    setRatings(res, member)
+
+
+#work in progress
+def sendPM(br, member, message, delay = 60):
+    res = mecopner(br, "https://www.chess.com/messages/compose/%s" %member.username)
+    soup = getSoup(res)
+    message = processMsgStr(message.replace("/name", member.name).replace("/username", member.username))
+
+    token = gettoken(soup) #get your unique session token
+
+    parameters = {"_token" : token, "message" : message, "receiver" : member.username}
+    data = urllib.urlencode(parameters)
+    br.open("https://www.chess.com/callback/messages/%s" %member.username, data)
+    time.sleep(delay)
