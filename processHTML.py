@@ -26,13 +26,13 @@ def wasInvited(soup, member):
 
 
 #return [int day, int month, int year]
-#work in progress. need months ago, years ago and minutes ago, and possibly more
+#work in progress. need months ago, years ago and weeks ago, and possibly more
 def getLastOnline(soup):
     res = soup.find("div", {"class" : "member-info-row"}).text.split("\n")
     for x in range(len(res)):
         if res[x] == "Last Login":
             print res[x + 1]
-            if res[x + 1] == "In Live":
+            if res[x + 1] == "In Live" or res[x + 1] == "Online Now" or "min ago" in res[x + 1]:
                 return todaysDate()
             if "hrs ago" in res[x + 1]:
                 hoursAgo = int(res[x + 1][0: res[x + 1].index("hrs ago")])
