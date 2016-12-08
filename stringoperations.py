@@ -6,11 +6,10 @@ def streplacer(text, rplst):
 
 
 def processMsgStr(inData):
-    if type(inData) == str:
-        inData = string.split("\n")
+    inData = inData.split("\n")
 
     i = 0
-    while i < len(string):
+    while i < len(inData):
         if inData[i] == "<Image>":
             inData[i] = ""
             inData[i + 1] = """<img src="%s">""" %inData[i + 1]
