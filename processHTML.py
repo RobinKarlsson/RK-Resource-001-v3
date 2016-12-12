@@ -10,6 +10,20 @@ except:
 def getSoup(response):
     return BeautifulSoup(response, "html.parser")
 
+def getNextLinkFormat(soup):
+    nextLink = soup.find("a", href = True, title = "Next")
+
+    if nextLink:
+        nextLink = nextLink["href"]
+        print nextLink
+        return nextLink[nextLink.index("page=") - 1]
+    return None
+
+def nextPageExist(soup):
+    if soup.find("a", href = True, title = "Next"):
+        return True
+    return False
+
 def wasInvited(soup, member):
     msgs = [x.text for x in soup.find_all("div", {"class" : ["alert-error", "alert-success"]})]
 

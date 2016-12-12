@@ -62,6 +62,8 @@ def extractMemberList(br, targetList):
     for target in targetList:
         nextgagectrl = None
 
+        nextCtrl = getNextLinkFormat(getSoup(mecopner(br, target.url)))
+
         if target.start:
             pages = [str(x) for x in range(target.start, target.stop + 1)]
         else:
@@ -69,7 +71,7 @@ def extractMemberList(br, targetList):
 
         for page in pages:
             if page:
-                url = target.url + page
+                url = target.url + nextCtrl + "page=" + page
             else:
                 url = target.url
 
@@ -86,6 +88,9 @@ def extractMemberList(br, targetList):
                 member = usr.text
                 if not member[-5:] == "[IMG]" and member not in memberlist:
                     memberlist.append(member)
+
+            if not nextPageExist(getSoup(res)):
+                break
 
     return memberlist
         
