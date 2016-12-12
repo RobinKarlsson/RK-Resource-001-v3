@@ -21,17 +21,19 @@ def wasInvited(soup, member):
         elif "Invitations sent to 1 members." in x:
             return "Invite sent to %s" %member
         else:
-            raw_input("This Should NOT happen, please contact the developer")
+            return("This Should NOT happen, please contact the developer")
+
+    return "\nthis should NOT have happened, please send this to your friendly neighbour sudo:\n%s\n" %str(msgs)
 
 
 
 #return [int day, int month, int year]
+#not working correctly, might sometimes give wrong date
 #work in progress. need months ago, years ago and weeks ago, and possibly more
 def getLastOnline(soup):
     res = soup.find("div", {"class" : "member-info-row"}).text.split("\n")
     for x in range(len(res)):
         if res[x] == "Last Login":
-            print res[x + 1]
             if res[x + 1] == "In Live" or res[x + 1] == "Online Now" or "min ago" in res[x + 1]:
                 return todaysDate()
             if "hrs ago" in res[x + 1]:

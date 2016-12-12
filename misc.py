@@ -4,6 +4,12 @@ from stringoperations import streplacer
 import sys
 import os
 
+class URL:
+    def __init__(self, url, start = None, stop = None):
+        self.url = url
+        self.start = start
+        self.stop = stop
+
 #return [int day, int month, int year]
 def todaysDate():
     now = datetime.now()
@@ -124,28 +130,26 @@ def makefolder(flst):
 
 def tlstcreator():
     targetlist = []
-    choice1 = ""
-    while choice1 not in (["n"]):
-        tlst = []
-        url1 = raw_input("Paste the url here: ")
+    choice = None
 
-        start1 = enterint("\nEnter pagenumber to start on: ")
-        if not start1 == "":
-            if "?page=" in url1:
-                url1 = url1[0: url1.index("?page=")]
-            stop1 = enterint("\nEnter pagenumber to end on: ")
+    while choice != "n":
+        url = raw_input("Paste the url here: ")
 
-            url1 = "%s?page=" %url1
-            for x in range(start1, stop1 + 1):
-                tlst.append(url1 + str(x))
-
+        start = enterint("\nEnter pagenumber to start on: ")
+        if start == "":
+            targetlist.append(URL(url))
         else:
-            tlst = [url1]
-        targetlist.append(tlst)
+            stop = enterint("Enter pagenumber to end on: ")
 
-        choice1 = ""
-        while choice1 not in (["y", "n"]):
-            choice1 = raw_input("\nDo you wish to process any additional targets? (y/n): ")
+            if stop == "":
+                stop = 99
+
+            targetlist.append(URL(url, start, stop))
+
+        choice = None
+        while choice not in ["y", "n"]:
+            choice = raw_input("\nDo you wish to process any additional targets? (y/n): ")
+            
     return targetlist
 
 def memberfilter(member, minonlinerat = None, maxonlinerat = None, membersince = None):

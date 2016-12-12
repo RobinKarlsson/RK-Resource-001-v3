@@ -109,11 +109,8 @@ def inviter(br, targetlist, endless = True):
                     tmp.write("\n%s" %"\n".join(invited))
 
 
-
-
-
 def main():
-    choice = enterint("What would you like to do?\n 1. Extract member lists\n 2. send invites (under construction)\n 3. Send pm (under construction)\n 4. Send note (under construction)\nYour choice, monkeyboy: ")
+    choice = enterint("What would you like to do?\n 1. Extract member lists\n 2. send invites (under construction)\n 3. Send pm (under construction)\n 4. Send note (under construction)\n 5. Filter a list of members\nYour choice, monkeyboy: ")
     br = mecbrowser()
     print "\n"
 
@@ -121,7 +118,7 @@ def main():
         targetlst = tlstcreator()
         memlist = extractMemberList(br, targetlst)
 
-        print "\n%i members found:" %len(memlist)
+        print "\n%i members found: " %len(memlist)
         print ", ".join(memlist)
 
     elif choice == 2: #inviter
@@ -232,6 +229,30 @@ def main():
             member = makeMember(br, member)
             msg = msg.replace("/name", member.name).replace("/username", member.username)
             sendNote(br, member, msg, delay)
+            
+    elif choice == 5: #run members through filter
+        members = raw_input("Enter comma seperated list of members to filter: ").replace(" ", "").split(",")
+
+        minrating = enterint("\n\nMin rating: ")
+        if minrating == "": minrating = None
+        maxrating = enterint("Max rating: ")
+        if maxrating == "": maxrating = None
+        membersinceyear = enterint("Been on chess.com since year: ")
+        if membersinceyear != "":
+            membersincemonth = enterint("Been on chess.com since month: ")
+            membersinceday = enterint("Been on chess.com since day: ")
+            membersince = [membersinceday, membersincemonth, membersinceyear]
+        else:
+            membersince = None
+
+        passed = []
+        for member in members:
+            print "checking %s" %member
+            member = makeMember(br, member)
+            if memberfilter(member, minrating, maxrating, membersince):
+                passed.append(member.username)
+
+        print "\n\n%i members passed the filter:\n%s\n" %(len(passed), ", ".join(passed))
 
     br.close()
 

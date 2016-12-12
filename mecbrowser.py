@@ -55,17 +55,28 @@ def meclogin(br, usr, pas):
         except:
             counter += 1
 
-#mecbrowser object, list of tuples with urls to scrap
+#mecbrowser object, list of URL objects
 def extractMemberList(br, targetList):
     memberlist = []
 
-    for targettuple in targetList:
-        for url in targettuple:
+    for target in targetList:
+        nextgagectrl = None
+
+        if target.start:
+            pages = [str(x) for x in range(target.start, target.stop + 1)]
+        else:
+            pages = [None]
+
+        for page in pages:
+            if page:
+                url = target.url + page
+            else:
+                url = target.url
+
             while True:
                 try:
                     print "processing %s" %url
                     res = mecopner(br, url)
-                    soup = getSoup(res)
                     time.sleep(0.5)
                     break
                 except Exception, e:
@@ -75,9 +86,6 @@ def extractMemberList(br, targetList):
                 member = usr.text
                 if not member[-5:] == "[IMG]" and member not in memberlist:
                     memberlist.append(member)
-
-            if soup.find(class_ = "next disabled"):
-                break
 
     return memberlist
         
@@ -126,8 +134,6 @@ def buildMember(br, member):
 
     member.joined = getJoinDate(soup)
 
-    getLastOnline(soup)
-
     res = mecopner(br, "https://www.chess.com/stats/daily/%s" %member.username)
     setRatings(res, member)
 
@@ -140,7 +146,7 @@ def sendPM(br, member, message, delay = 60):
 
     token = gettoken(soup) #get your unique session token
 
-    parameters = {"_token" : token, "message" : message, "receiver" : member.username}
+    parameters = {"_token" : token, "message" : message, "receiver[username]" : member.username}
     data = urllib.urlencode(parameters)
     br.open("https://www.chess.com/callback/messages/%s" %member.username, data)
     time.sleep(delay)
