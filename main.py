@@ -3,16 +3,30 @@ from mecbrowser import *
 from misc import *
 from member import *
 
-makefolder(["data", "config", "config/invites", "data/messages", "data/invite lists"])
+makefolder(["data", "config", "config/invites", "config/login", "data/messages", "data/invite lists"])
 
-def login(br, x = None):
-    while x not in ["y", "n"]:
-        x = raw_input("login? (y/n) ")
+if os.path.isfile("config/login/data.dll"):
+    with open("config/login/data.dll", "rb") as txt:
+        usr = readUsrPas()[0]
+else:   usr = "monkeyboy"
 
-    if x == "y":
+def login(br):
+    if os.path.isfile("config/login/data.dll"):
+        username, password = readUsrPas()
+
+    else:
+        saveLogCred = None
+
         username = raw_input("your username: ")
         password = raw_input("your password: ")
-        meclogin(br, username, password)
+
+        while saveLogCred not in ["y", "n"]:
+            saveLogCred = raw_input("\nSave login credentials for faster login at later runs? (y/n) ")
+
+        if saveLogCred == "y":
+            writeUsrPas(username, password)
+
+    meclogin(br, username, password)
         
 
 def inviter(br, targetlist, endless = True):
@@ -64,7 +78,6 @@ def inviter(br, targetlist, endless = True):
             if len(memtinv) == 0:
                 memtinv = readMemFile(infile)
                 usedfile = infile
-                memtinv = [x for x in memtinv if x not in memalrinv]
                 standardlst = True
                 invfilter = True
                 deserterlst = False
@@ -80,10 +93,9 @@ def inviter(br, targetlist, endless = True):
 
             invited = []
             for member in memtinv:
-                if notToInvite:
-                    if member in notToInvite:
-                        memtinv.remove(member)
-                        continue
+                if member in notToInvite or member in memalrinv:
+                    memtinv.remove(member)
+                    continue
 
                 member = makeMember(br, member)
 
@@ -110,12 +122,19 @@ def inviter(br, targetlist, endless = True):
 
 
 def main():
-    choice = enterint("What would you like to do?\n 1. Extract member lists\n 2. send invites (under construction)\n 3. Send pm (under construction)\n 4. Send note (under construction)\n 5. Filter a list of members\nYour choice, monkeyboy: ")
+    choice = enterint("What would you like to do?\n 1. Extract member lists\n 2. send invites (under construction)\n 3. Send pm (under construction)\n 4. Send note (under construction)\n 5. Filter a list of members\n 6. Set operations on lists of members\nYour choice, %s: " %usr)
     br = mecbrowser()
     print "\n"
 
     if choice == 1: #extract member names
         targetlst = tlstcreator()
+
+        dologin = None
+        while dologin not in ["y", "n"]:
+            dologin = raw_input("\nLogin? (y/n) ")
+        if dologin == "y":
+            login(br)
+
         memlist = extractMemberList(br, targetlst)
 
         print "\n%i members found: " %len(memlist)
@@ -134,7 +153,7 @@ def main():
                 print "", fname[0], fname[1].replace(".ini", "")
             invchoice = enterint("it would be recommended to enter your choice here: ")
 
-            login(br, "y")
+            login(br)
             if invchoice == 0:
                 inviter(br, inifilelist)
             else:
@@ -207,12 +226,12 @@ def main():
                     f.write(element)
 
     elif choice == 3: #pm sender
-        targets = raw_input("Enter comma seperated list of members to post note to: ").replace(" ", "").split(",")
+        targets = raw_input("Enter comma seperated list of members to send pm to: ").replace(" ", "").split(",")
         msg = "\n".join(buildMsgList())
 
         delay = enterint("\nDelay between PMs (s): ")
 
-        login(br, "y")
+        login(br)
         for member in targets:
             print "sending PM to %s" %member
             member = makeMember(br, member)
@@ -223,7 +242,7 @@ def main():
         msg = raw_input("enter message: ")
         delay = enterint("\nDelay between notes (s): ")
 
-        login(br, "y")
+        login(br)
         for member in targets:
             print "sending note to %s" %member
             member = makeMember(br, member)
@@ -253,6 +272,21 @@ def main():
                 passed.append(member.username)
 
         print "\n\n%i members passed the filter:\n%s\n" %(len(passed), ", ".join(passed))
+
+    elif choice == 6: #set operations on two lists
+        setChoice = None
+        while setChoice not in [1, 2, 3, 4, 5]:
+            setChoice = enterint("\n\nWhat would you like to do?\n 1. Get members in list 1 but not in list 2\n 2. Get members common to both lists\n 3. Get all members from both lists\n 4. Get members in either list but not in both\n 5. Remove duplicates from a list\nEnter choice: ")
+        set1 = raw_input("enter comma seperated list of usernames (set 1): ").replace(" ", "").split(",")
+        if setChoice != 5: set2 = raw_input("enter comma seperated list of usernames (set 2): ").replace(" ", "").split(",")
+        else: newSet = set(set1)
+
+        if setChoice == 1: newSet = set(set1).difference(set(set2))
+        elif setChoice == 2: newSet = set(set1).intersection(set(set2))
+        elif setChoice == 3: newSet = set(set1).union(set(set2))
+        elif setChoice == 4: newSet = set(set1).symmetric_difference(set(set2))
+
+        print ", ".join(newSet)
 
     br.close()
 

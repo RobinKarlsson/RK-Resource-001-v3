@@ -10,6 +10,15 @@ class URL:
         self.start = start
         self.stop = stop
 
+def writeUsrPas(usr, pas):
+    with open("config/login/data.dll", "wb") as f:
+        f.write("%s %s" %(usr, pas))
+
+def readUsrPas():
+    with open("config/login/data.dll", "rb") as f:
+        return f.read().split()
+        
+
 #return [int day, int month, int year]
 def todaysDate():
     now = datetime.now()
