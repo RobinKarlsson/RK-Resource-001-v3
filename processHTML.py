@@ -101,7 +101,6 @@ def setName(soup, member):
         return
 
     for x in soup.find_all("span", {"class" : "username"}):
-        x = str(x)
         if "data-name" in x:
             if name in x:
                 member.name = name

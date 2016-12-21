@@ -229,6 +229,9 @@ def main():
         targets = raw_input("Enter comma seperated list of members to send pm to: ").replace(" ", "").split(",")
         msg = "\n".join(buildMsgList())
 
+        if usr != "monkeyboy" and usr in targets:
+            targets.remove(usr)
+
         delay = enterint("\nDelay between PMs (s): ")
 
         login(br)
@@ -239,6 +242,10 @@ def main():
 
     elif choice == 4: #note sender
         targets = raw_input("Enter comma seperated list of members to post note to: ").replace(" ", "").split(",")
+
+        if usr != "monkeyboy" and usr in targets:
+            targets.remove(usr)
+
         msg = raw_input("enter message: ")
         delay = enterint("\nDelay between notes (s): ")
 
