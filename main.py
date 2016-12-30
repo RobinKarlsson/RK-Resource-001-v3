@@ -98,6 +98,9 @@ def inviter(br, targetlist, endless = True):
                     continue
 
                 member = makeMember(br, member)
+                if not member:
+                    memtinv.remove(member)
+                    continue
 
                 if invfilter:
                     if not memberfilter(member, minonlinerat = minrat, maxonlinerat = maxrat, membersince = joindate):
@@ -238,6 +241,11 @@ def main():
         for member in targets:
             print "sending PM to %s" %member
             member = makeMember(br, member)
+
+            if not member:
+                print "invalid member\n"
+                continue
+
             sendPM(br, member, msg, delay)
 
     elif choice == 4: #note sender
@@ -253,6 +261,11 @@ def main():
         for member in targets:
             print "sending note to %s" %member
             member = makeMember(br, member)
+            
+            if not member:
+                print "invalid member\n" %member
+                continue
+            
             msg = msg.replace("/name", member.name).replace("/username", member.username)
             sendNote(br, member, msg, delay)
             
@@ -275,6 +288,10 @@ def main():
         for member in members:
             print "checking %s" %member
             member = makeMember(br, member)
+
+            if not member:
+                continue
+    
             if memberfilter(member, minrating, maxrating, membersince):
                 passed.append(member.username)
 

@@ -19,7 +19,8 @@ class Member:
 def makeMember(br, usrname):
     member = Member(usrname)
 
-    buildMember(br, member)
+    if not buildMember(br, member):
+        return
 
     return member
     

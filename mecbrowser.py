@@ -4,6 +4,7 @@ import urllib
 from processHTML import *
 from stringoperations import *
 from misc import *
+from urllib2 import HTTPError
 
 try:
     import mechanize
@@ -35,6 +36,8 @@ def mecopner(br, url):
             response = br.open(url)
             return response
 
+        except HTTPError:
+            return
         except Exception, errormsg:
             print repr(errormsg)
             print "reopening %s" %url
@@ -134,6 +137,10 @@ def sendNote(br, member, message, delay = 30):
 #input browser object, member object
 def buildMember(br, member):
     res = mecopner(br, "https://www.chess.com/member/%s" %member.username)
+
+    if not res:
+        return
+
     soup = getSoup(res)
     setName(soup, member)
 
@@ -141,7 +148,7 @@ def buildMember(br, member):
 
     res = mecopner(br, "https://www.chess.com/stats/daily/%s" %member.username)
     setRatings(res, member)
-
+    return True
 
 #work in progress
 def sendPM(br, member, message, delay = 60):
