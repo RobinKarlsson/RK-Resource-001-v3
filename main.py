@@ -125,7 +125,7 @@ def inviter(br, targetlist, endless = True):
 
 
 def main():
-    choice = enterint("What would you like to do?\n 1. Extract member lists\n 2. send invites (under construction)\n 3. Send pm (under construction)\n 4. Send note (under construction)\n 5. Filter a list of members\n 6. Set operations on lists of members\nYour choice, %s: " %usr)
+    choice = enterint("What would you like to do?\n 1. Extract member lists\n 2. send invites (beta)\n 3. Send pm (beta)\n 4. Send note (beta)\n 5. Filter a list of members\n 6. Set operations on lists of members\nYour choice, %s: " %usr)
     br = mecbrowser()
     print "\n"
 
