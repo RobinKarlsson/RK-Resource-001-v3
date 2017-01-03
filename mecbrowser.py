@@ -142,8 +142,10 @@ def buildMember(br, member):
         return
 
     soup = getSoup(res)
-    setName(soup, member)
+    if isClosed(soup):
+        return
 
+    setName(soup, member)
     member.joined = getJoinDate(soup)
 
     res = mecopner(br, "https://www.chess.com/stats/daily/%s" %member.username)

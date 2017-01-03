@@ -10,6 +10,11 @@ except:
 def getSoup(response):
     return BeautifulSoup(response, "html.parser")
 
+def isClosed(soup):
+    status = soup.find("span", "status-title")
+    if status and status.text == "Closed: Inactive":
+        return True
+
 def getNextLinkFormat(soup):
     nextLink = soup.find("a", href = True, title = "Next")
 
