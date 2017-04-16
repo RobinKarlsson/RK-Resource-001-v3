@@ -73,7 +73,7 @@ def extractMemberList(br, targetList):
             pages = [None]
 
         for page in pages:
-            if page:
+            if page and nextCtrl:
                 url = target.url + nextCtrl + "page=" + page
             else:
                 url = target.url

@@ -16,16 +16,15 @@ def isClosed(soup):
         return True
 
 def getNextLinkFormat(soup):
-    nextLink = soup.find("a", href = True, title = "Next")
-
+    nextLink = soup.find("li", {"class": "next"})
+    nextLink = nextLink.find("a")
     if nextLink:
         nextLink = nextLink["href"]
-        print nextLink
         return nextLink[nextLink.index("page=") - 1]
     return None
 
 def nextPageExist(soup):
-    if soup.find("a", href = True, title = "Next"):
+    if getNextLinkFormat(soup):
         return True
     return False
 

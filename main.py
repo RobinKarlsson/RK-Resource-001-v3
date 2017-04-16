@@ -1,16 +1,17 @@
 from os.path import isfile, join
 from mecbrowser import *
+from selbrowser import *
 from misc import *
 from member import *
 
-makefolder(["data", "config", "config/invites", "config/login", "data/messages", "data/invite lists"])
+makefolder(["data", "config", "config/invites", "config/login", "data/messages", "data/invite lists", "data/webdriver"])
 
 if os.path.isfile("config/login/data.dll"):
     with open("config/login/data.dll", "rb") as txt:
         usr = readUsrPas()[0]
 else:   usr = "monkeyboy"
 
-def login(br):
+def login(br, selenium = False):
     if os.path.isfile("config/login/data.dll"):
         username, password = readUsrPas()
 
@@ -26,12 +27,14 @@ def login(br):
         if saveLogCred == "y":
             writeUsrPas(username, password)
 
-    meclogin(br, username, password)
+    if selenium:
+        sellogin(br, username, password)
+    else:
+        meclogin(br, username, password)
         
 
 def inviter(br, targetlist, endless = True):
     redo = True
-    print targetlist
 
     while redo:
         if not endless:
@@ -60,6 +63,8 @@ def inviter(br, targetlist, endless = True):
             notToInvite = condic["Comma seperated list of usernames that should not be invited"]
             if notToInvite:
                 notToInvite = notToInvite.replace(" ", "").split(",")
+            else:
+                notToInvite = []
 
             memalrinv = readMemFile(alrfile)
             usedfile = priofile
@@ -97,10 +102,12 @@ def inviter(br, targetlist, endless = True):
                     memtinv.remove(member)
                     continue
 
-                member = makeMember(br, member)
-                if not member:
+                tmp = makeMember(br, member)
+                if not tmp:
                     memtinv.remove(member)
                     continue
+                
+                member = tmp
 
                 if invfilter:
                     if not memberfilter(member, minonlinerat = minrat, maxonlinerat = maxrat, membersince = joindate):
@@ -237,7 +244,9 @@ def main():
 
         delay = enterint("\nDelay between PMs (s): ")
 
-        login(br)
+        driver = pickbrowser()
+        login(driver, True)
+
         for member in targets:
             print "sending PM to %s" %member
             member = makeMember(br, member)
@@ -246,7 +255,9 @@ def main():
                 print "invalid member\n"
                 continue
 
-            sendPM(br, member, msg, delay)
+            sendpmSel(driver, member, processMsgStr(msg.replace("/name", member.name).replace("/username", member.username)), delay)
+
+        driver.quit()
 
     elif choice == 4: #note sender
         targets = raw_input("Enter comma seperated list of members to post note to: ").replace(" ", "").split(",")
