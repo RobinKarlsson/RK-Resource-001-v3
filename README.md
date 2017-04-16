@@ -5,4 +5,4 @@ Written in python 2.7
 
 Work in progress
 
-Required third party libraries: mechanize, BeautifulSoup 4
+Required third party libraries: mechanize, Selenium (for sending pm´s), BeautifulSoup 4
