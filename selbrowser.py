@@ -39,6 +39,13 @@ def pickbrowser():
 
 def sendpmSel(browser, member, msg, delay):
     browser = selopner(browser, "https://www.chess.com/messages/compose/" + member.name)
-    browser.execute_script("tinyMCE.activeEditor.setContent('%s')" %msg)
+    while True:
+        try:
+            browser.execute_script("tinyMCE.activeEditor.setContent('%s')" %msg)
+            break
+        except Exception, e:
+            print repr(e)
+            time.sleep(uniform(2, 3))
+
     browser.find_element_by_xpath("//*[@class='btn btn-primary btn-large']").click()
     time.sleep(uniform(delay, delay + 1))
