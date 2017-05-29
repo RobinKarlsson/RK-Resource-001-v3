@@ -145,6 +145,8 @@ def buildMember(br, member):
     if isClosed(soup):
         return
 
+    print "building member: " + member.username
+
     setName(soup, member)
     member.joined = getJoinDate(soup)
 

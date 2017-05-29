@@ -164,17 +164,14 @@ def tlstcreator():
 def memberfilter(member, minonlinerat = None, maxonlinerat = None, membersince = None):
     if membersince:
         if datetime(member.joined[2], member.joined[1], member.joined[0]) > datetime(membersince[2], membersince[1], membersince[0]):
-            print datetime(member.joined[2], member.joined[1], member.joined[0])
             return False
 
     if minonlinerat:
         if member.daily < minonlinerat:
-            print member.daily
             return False
 
     if maxonlinerat:
         if member.daily > maxonlinerat:
-            print member.daily
             return False
 
     return True

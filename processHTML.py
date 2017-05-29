@@ -78,22 +78,40 @@ def setRatings(res, member):
         section = tmp.text.split()
         if len(section) == 2:
             if section[0] == "Daily":
-                member.daily = int(section[1])
+                if section[1] != "Unrated":
+                    member.daily = int(section[1])
+                else:
+                    member.daily = None
 
             elif section[0] == "Tactics":
-                member.tactics = int(section[1])
+                if section[1] != "Unrated":
+                    member.tactics = int(section[1])
+                else:
+                    member.tactics = None
 
             elif section[0] == "Lessons":
-                member.lessons = int(section[1])
+                if section[1] != "Unrated":
+                    member.lessons = int(section[1])
+                else:
+                    member.lessons = None
 
             elif section[0] == "Rapid":
-                member.rapid = int(section[1])
+                if section[1] != "Unrated":
+                    member.rapid = int(section[1])
+                else:
+                    member.rapid = None
 
             elif section[0] == "Bullet":
-                member.bullet = int(section[1])
+                if section[1] != "Unrated":
+                    member.bullet = int(section[1])
+                else:
+                    member.bullet = None
 
             elif section[0] == "Blitz":
-                member.blitz = int(section[1])
+                if section[1] != "Unrated":
+                    member.blitz = int(section[1])
+                else:
+                    member.blitz = None
 
 
 #input soup object, member object
