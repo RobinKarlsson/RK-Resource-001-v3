@@ -108,8 +108,8 @@ def sendInvite(br, groupID, member, message):
         if "TextareaControl" in str(form):
             br.select_form(nr = counter)
             form.set_all_readonly(False)
-            br["club_members_invite_type[usernames]"] = member.username
-            br["club_members_invite_type[message]"] = message
+            br["members_invite[usernames]"] = member.username
+            br["members_invite[message]"] = message
             res = br.submit(nr = 0)
 
             soup = getSoup(res)
@@ -122,7 +122,7 @@ def sendInvite(br, groupID, member, message):
 
 
 #work in progress
-def sendNote(br, member, message, delay = 30):
+def sendNoteMec(br, member, message, delay = 30):
     res = mecopner(br, "https://www.chess.com/member/%s" %member.username)
     soup = getSoup(res)
 

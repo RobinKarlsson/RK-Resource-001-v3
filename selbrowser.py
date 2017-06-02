@@ -15,11 +15,11 @@ def sellogin(browser, username = None, password = None):
     browser = selopner(browser, "https://www.chess.com/login")
 
     if username:
-        browser.find_element_by_id("username").send_keys(username)
+        browser.find_element_by_id("user_login_username").send_keys(username)
     if password:
-        browser.find_element_by_id("password").send_keys(password)
+        browser.find_element_by_id("user_login_password").send_keys(password)
 
-    browser.find_element_by_id("login").click()
+    browser.find_element_by_id("user_login_login").click()
 
 
 def selopner(browser, pointl):
@@ -36,6 +36,15 @@ def selopner(browser, pointl):
 
 def pickbrowser():
     return webdriver.Chrome(os.path.abspath("data/webdriver/chromedriver"))
+
+def sendNoteSel(browser, member, message, delay = 30):
+    browser = selopner(browser, "https://www.chess.com/member/%s" %member.username)
+    time.sleep(uniform(2, 3))
+
+    browser.find_element_by_name("userNote").send_keys(message.replace("/name", member.name).replace("/username", member.username))
+    browser.find_element_by_name("userNote").send_keys(Keys.RETURN)
+    
+    time.sleep(uniform(delay - 2, delay))
 
 def sendpmSel(browser, member, msg, delay):
     browser = selopner(browser, "https://www.chess.com/messages/compose/" + member.name)

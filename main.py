@@ -268,7 +268,9 @@ def main():
         msg = raw_input("enter message: ")
         delay = enterint("\nDelay between notes (s): ")
 
-        login(br)
+        driver = pickbrowser()
+        login(driver, True)
+
         for member in targets:
             print "sending note to %s" %member
             member = makeMember(br, member)
@@ -278,7 +280,7 @@ def main():
                 continue
             
             msg = msg.replace("/name", member.name).replace("/username", member.username)
-            sendNote(br, member, msg, delay)
+            sendNoteSel(driver, member, msg, delay)
             
     elif choice == 5: #run members through filter
         members = raw_input("Enter comma seperated list of members to filter: ").replace(" ", "").split(",")
