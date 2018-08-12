@@ -17,7 +17,12 @@ def isClosed(soup):
 
 def getNextLinkFormat(soup):
     nextLink = soup.find("li", {"class": "next"})
-    nextLink = nextLink.find("a")
+
+    try:
+        nextLink = nextLink.find("a")
+    except AttributeError:
+        return False
+    
     if nextLink:
         nextLink = nextLink["href"]
         return nextLink[nextLink.index("page=") - 1]

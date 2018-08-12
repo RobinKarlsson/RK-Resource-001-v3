@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from os.path import isfile
 from stringoperations import streplacer
 import sys
+import re
 import os
 
 class URL:
@@ -188,9 +189,11 @@ def buildMsgList():
         if additionType == 1:
             txt = raw_input("Enter text: ")
             msgList.append("<Text>")
+
         elif additionType == 2:
             txt = raw_input("enter url of image: ")
             msgList.append("<Image>")
+
         elif additionType == 3:
             txt = raw_input("enter id of video: ")
             msgList.append("<Video>")
